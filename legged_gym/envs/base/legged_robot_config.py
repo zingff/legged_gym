@@ -35,8 +35,8 @@ class LeggedRobotCfg(BaseConfig):
         num_envs = 4096 # number of envs (robots)
         num_observations = 235
         num_privileged_obs = None # if not None a priviledge_obs_buf will be returned by step() (critic obs for assymetric training). None is returned otherwise 
-        num_actions = 12
-        env_spacing = 3.  # not used with heightfields/trimeshes 
+        num_actions = 12 # number of revolute or continuous joints (fixed exclueded)
+        env_spacing = 3.  # not used with heightfields/trimeshes, spacing between robots when init
         send_timeouts = True # send time out information to the algorithm
         episode_length_s = 20 # episode length in seconds
 
@@ -78,6 +78,7 @@ class LeggedRobotCfg(BaseConfig):
             heading = [-3.14, 3.14]
 
     class init_state:
+        # modifying pos_z is enough, pos_z >= robot height
         pos = [0.0, 0.0, 1.] # x,y,z [m]
         rot = [0.0, 0.0, 0.0, 1.0] # x,y,z,w [quat]
         lin_vel = [0.0, 0.0, 0.0]  # x,y,z [m/s]
@@ -97,9 +98,11 @@ class LeggedRobotCfg(BaseConfig):
         # related to control rate difference between sim env and real robot
         decimation = 4
 
+    # related to urdf, important
     class asset:
         file = ""
         name = "legged_robot"  # actor name
+        # omit keypoint (torso) here, see loong config
         foot_name = "None" # name of the feet bodies, used to index body state and contact force tensors
         penalize_contacts_on = []
         terminate_after_contacts_on = []
@@ -129,6 +132,7 @@ class LeggedRobotCfg(BaseConfig):
         max_push_vel_xy = 1.
 
     class rewards:
+        # weights of rewards
         class scales:
             termination = -0.0
             tracking_lin_vel = 1.0
@@ -164,6 +168,7 @@ class LeggedRobotCfg(BaseConfig):
         clip_observations = 100.
         clip_actions = 100.
 
+    # work when observations are not works well, for robustness
     class noise:
         add_noise = True
         noise_level = 1.0 # scales other values
@@ -182,7 +187,8 @@ class LeggedRobotCfg(BaseConfig):
         lookat = [11., 5, 3.]  # [m]
 
     class sim:
-        dt =  0.005
+        # step time = dt * decimation, e.g. 0.005 * 4 = 0.02 sec
+        dt =  0.005 # sim rate[s]
         substeps = 1
         gravity = [0., 0. ,-9.81]  # [m/s^2]
         up_axis = 1  # 0 is y, 1 is z

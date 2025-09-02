@@ -65,6 +65,7 @@ class Azure_Loong_config(LeggedRobotCfg):
             [-.5, .5]
         ]
 
+        # only revolte/continuous joints are needed
         default_joint_angles = {
             'Joint-hip-r-roll': 0.,
             'Joint-hip-r-yaw': 0.,
@@ -116,6 +117,8 @@ class Azure_Loong_config(LeggedRobotCfg):
     class control(LeggedRobotCfg.control):
         control_type = 'P' # P: position, V: velocity, T: torques
         # stiffness and damping for joints
+        # modify the joint name same to the urdf
+        # todo: how to set proper values
         stiffness = {
             'Joint-hip-r-roll': 300.,
             'Joint-hip-r-yaw': 200.,
@@ -192,11 +195,11 @@ class Azure_Loong_config(LeggedRobotCfg):
     class asset(LeggedRobotCfg.asset):
         file = '{LEGGED_GYM_ROOT_DIR}'\
             '/resources/robots/OGHR/urdf/OGHR_wholeBody_Simplified(12dof).urdf'
-        keypoints = ["base_link"]
+        keypoints = ["base_link"] # torso link
         end_effectors = ['Link-ankel-r-roll', 'Link-ankel-l-roll']
-        foot_name = ['Link-ankel-l-roll', 'Link-ankel-r-roll']
+        foot_name = ['Link-ankel-l-roll', 'Link-ankel-r-roll'] # feet links
         terminate_after_contacts_on = [
-            "base_link",
+            "base_link", # usually torso link
         ]
 
         disable_gravity = False
